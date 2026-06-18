@@ -57,7 +57,7 @@ RUN curl -fsSL https://claude.ai/install.sh | bash -s 2.1.62 \
 # only track master, so the runtime's `git fetch origin <runbook-branch>` would
 # never create origin/<branch> and `git switch` would fail with "invalid reference".
 RUN git clone --filter=blob:none \
-        https://github.com/aviator-ss-testing/wallabag.git /code
+        https://github.com/aviator-ag-org/wallabag.git /code
 WORKDIR /code
 
 # PHP deps. --no-scripts skips wallabag's post-install hooks (they need runtime
