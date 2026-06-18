@@ -45,8 +45,8 @@ changed() { [ "$CHANGED" = "__ALL__" ] || echo "$CHANGED" | grep -qE "$1"; }
 # Database: the baked seed survives the launch; only act if it's missing/empty.
 mkdir -p data/db
 if [ ! -s data/db/wallabag.sqlite ]; then
-  t "  DB missing/empty — running migrations"
-  php bin/console doctrine:migrations:migrate --no-interaction --env=dev || true
+  t "  DB missing/empty — restoring from tracked seed.sqlite"
+  cp docker/preview/seed.sqlite data/db/wallabag.sqlite
 fi
 chmod 666 data/db/wallabag.sqlite 2>/dev/null || true
 
