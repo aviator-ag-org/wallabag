@@ -15,12 +15,25 @@
         {% else %}
             <span class="wbg-list-card__title">{{ entry.title|striptags|default('entry.default_title'|trans)|raw }}</span>
         {% endif %}
-        <div class="wbg-list-card__domain">
-            <a href="{{ entry.url|e }}" target="_blank" title="{{ entry.domainName|removeWww }}">{{ entry.domainName|removeWww }}</a>
-        </div>
-    </div>
 
-    <div class="wbg-list-meta">
-        {% include "Entry/_reading_time.html.twig" with {'entry': entry} only %}
+        {% if entry.content %}
+            <p class="wbg-list-card__excerpt">{{ entry.content|striptags|slice(0, 400) }}</p>
+        {% endif %}
+
+        <div class="wbg-list-card__meta">
+            <span class="wbg-list-card__meta-item">
+                {% include "Entry/_reading_time.html.twig" with {'entry': entry} only %}
+            </span>
+            <span class="wbg-list-card__meta-item">
+                <i class="material-icons" title="{{ 'entry.view.created_at'|trans }}">today</i>
+                {{ entry.createdAt|date('Y-m-d') }}
+            </span>
+            {% if entry.publishedBy is not empty %}
+                <span class="wbg-list-card__meta-item">
+                    <i class="material-icons" title="{{ 'entry.view.published_by'|trans }}">person</i>
+                    {% for author in entry.publishedBy %}{{ author|raw }}{% if not loop.last %}, {% endif %}{% endfor %}
+                </span>
+            {% endif %}
+        </div>
     </div>
 </div>
