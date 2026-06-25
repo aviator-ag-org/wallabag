@@ -294,7 +294,16 @@
 {% endblock %}
 
 {% block content %}
-    <div id="article" class="article" data-controller="scroll-storage" data-scroll-storage-entry-id-value="{{ entry.id }}" data-action="scroll@window->scroll-storage#saveScroll">
+    <div id="article" class="article"
+         data-controller="scroll-storage reading-progress"
+         data-scroll-storage-entry-id-value="{{ entry.id }}"
+         data-reading-progress-url-value="{{ path('reading_progress', {'id': entry.id}) }}"
+         data-reading-progress-token-value="{{ csrf_token('reading-progress') }}"
+         data-reading-progress-initial-value="{{ entry.readingProgress }}"
+         data-action="scroll@window->scroll-storage#saveScroll scroll@window->reading-progress#update">
+        <div class="reading-progress-track" aria-hidden="true">
+            <span class="reading-progress-track__fill" data-reading-progress-target="bar" style="width: {{ entry.readingProgress }}%;"></span>
+        </div>
         <header>
             <h1>
                 <span{% if entry.language is defined and entry.language is not null %} lang="{{ entry.getHTMLLanguage() }}"{% endif %}>{{ entry.title|striptags|default('entry.default_title'|trans)|raw }}</span>

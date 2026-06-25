@@ -187,6 +187,20 @@
     background: rgba(255, 255, 255, 0.04);
   }
 
+  .wbg-stats {
+    background: #1e1c19;
+    border-color: #2e2b27;
+  }
+
+  .wbg-stats__value {
+    color: #e8e3d8;
+  }
+
+  .wbg-progress,
+  .wbg-stats__progress-track {
+    background: #2e2b27;
+  }
+
   body.login {
     background: #181613;
   }

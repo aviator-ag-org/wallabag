@@ -1,0 +1,34 @@
+{# Reading-progress summary shown above the entries list. #}
+{% set stats = reading_stats() %}
+{% if stats.total > 0 %}
+    {% set total_minutes = (stats.total_reading_time / app.user.config.readingSpeed * 200)|round %}
+    <section class="wbg-stats" aria-label="{{ 'entry.list.reading_stats.title'|trans }}">
+        <div class="wbg-stats__grid">
+            <div class="wbg-stats__item">
+                <span class="wbg-stats__value">{{ stats.finished }}</span>
+                <span class="wbg-stats__label"><i class="material-icons">done_all</i> {{ 'entry.list.reading_stats.finished'|trans }}</span>
+            </div>
+            <div class="wbg-stats__item">
+                <span class="wbg-stats__value">{{ stats.in_progress }}</span>
+                <span class="wbg-stats__label"><i class="material-icons">auto_stories</i> {{ 'entry.list.reading_stats.in_progress'|trans }}</span>
+            </div>
+            <div class="wbg-stats__item">
+                <span class="wbg-stats__value">{{ stats.not_started }}</span>
+                <span class="wbg-stats__label"><i class="material-icons">bookmark_border</i> {{ 'entry.list.reading_stats.not_started'|trans }}</span>
+            </div>
+            <div class="wbg-stats__item">
+                <span class="wbg-stats__value">{{ total_minutes }}<small>{{ 'entry.list.reading_stats.minutes_suffix'|trans }}</small></span>
+                <span class="wbg-stats__label"><i class="material-icons">schedule</i> {{ 'entry.list.reading_stats.reading_time'|trans }}</span>
+            </div>
+        </div>
+        <div class="wbg-stats__progress">
+            <div class="wbg-stats__progress-head">
+                <span>{{ 'entry.list.reading_stats.average_progress'|trans }}</span>
+                <span class="wbg-stats__progress-value">{{ stats.avg_progress }}%</span>
+            </div>
+            <div class="wbg-stats__progress-track" role="progressbar" aria-valuenow="{{ stats.avg_progress }}" aria-valuemin="0" aria-valuemax="100">
+                <span class="wbg-stats__progress-fill" style="width: {{ stats.avg_progress }}%;"></span>
+            </div>
+        </div>
+    </section>
+{% endif %}
