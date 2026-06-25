@@ -194,6 +194,15 @@ class Entry
     private $readingTime = 0;
 
     /**
+     * Percentage of the article the user has scrolled through, 0-100.
+     *
+     * @var int
+     */
+    #[ORM\Column(name: 'reading_progress', type: 'integer', nullable: false, options: ['default' => 0])]
+    #[Groups(['entries_for_user', 'export_all'])]
+    private $readingProgress = 0;
+
+    /**
      * @var string|null
      */
     #[ORM\Column(name: 'domain_name', type: 'text', nullable: true)]
@@ -590,6 +599,34 @@ class Entry
     public function setReadingTime($readingTime): void
     {
         $this->readingTime = $readingTime;
+    }
+
+    /**
+     * @return int
+     */
+    public function getReadingProgress()
+    {
+        return $this->readingProgress;
+    }
+
+    /**
+     * Store how far the user has read the entry, clamped to the 0-100 range.
+     *
+     * @param int $readingProgress
+     */
+    public function setReadingProgress($readingProgress): void
+    {
+        $this->readingProgress = max(0, min(100, (int) $readingProgress));
+    }
+
+    /**
+     * Whether the user has started but not finished reading the entry.
+     *
+     * @return bool
+     */
+    public function isReadingInProgress()
+    {
+        return $this->readingProgress > 0 && $this->readingProgress < 100;
     }
 
     /**
