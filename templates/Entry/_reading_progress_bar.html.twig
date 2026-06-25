@@ -1,0 +1,6 @@
+{# Thin reading-progress indicator shared by every card variant. #}
+{% if entry.readingProgress is defined and entry.readingProgress > 0 %}
+    <div class="wbg-progress" title="{{ 'entry.list.reading_progress'|trans({'%progress%': entry.readingProgress}) }}" role="progressbar" aria-valuenow="{{ entry.readingProgress }}" aria-valuemin="0" aria-valuemax="100">
+        <span class="wbg-progress__fill{% if entry.readingProgress >= 100 %} wbg-progress__fill--complete{% endif %}" style="width: {{ entry.readingProgress }}%;"></span>
+    </div>
+{% endif %}

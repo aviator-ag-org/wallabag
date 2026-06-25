@@ -767,6 +767,10 @@ class EntryRestController extends WallabagRestController
             $entry->updateStar((bool) $data['isStarred']);
         }
 
+        if (null !== $data['readingProgress']) {
+            $entry->setReadingProgress((int) $data['readingProgress']);
+        }
+
         if (!empty($data['tags'])) {
             $tagsAssigner->assignTagsToEntry($entry, $data['tags']);
         }
@@ -988,6 +992,14 @@ class EntryRestController extends WallabagRestController
 
         if (null !== $data['isStarred']) {
             $entry->updateStar((bool) $data['isStarred']);
+        }
+
+        if (null !== $data['readingProgress']) {
+            $entry->setReadingProgress((int) $data['readingProgress']);
+
+            if (100 === $entry->getReadingProgress()) {
+                $entry->updateArchived(true);
+            }
         }
 
         if (!empty($data['tags'])) {
@@ -1415,6 +1427,7 @@ class EntryRestController extends WallabagRestController
             'publishedAt' => $request->request->get('published_at'),
             'authors' => $request->request->all()['authors'] ?? '',
             'origin_url' => $request->request->get('origin_url', ''),
+            'readingProgress' => $request->request->get('reading_progress'),
         ];
     }
 }

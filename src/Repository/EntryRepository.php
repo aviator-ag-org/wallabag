@@ -593,6 +593,40 @@ class EntryRepository extends ServiceEntityRepository
     }
 
     /**
+     * Aggregate reading progress information for a user in a single query.
+     *
+     * Returns an associative array with the raw aggregates: total entries,
+     * finished (archived), in-progress, not-started, the average reading
+     * progress and the cumulative reading time.
+     *
+     * @param int $userId
+     *
+     * @return array{total: int, finished: int, in_progress: int, not_started: int, avg_progress: float, total_reading_time: int}
+     */
+    public function getReadingProgressStatsByUser($userId)
+    {
+        $result = $this->createQueryBuilder('e')
+            ->select('COUNT(e.id) AS total')
+            ->addSelect('SUM(CASE WHEN e.isArchived = true THEN 1 ELSE 0 END) AS finished')
+            ->addSelect('SUM(CASE WHEN e.isArchived = false AND e.readingProgress > 0 THEN 1 ELSE 0 END) AS in_progress')
+            ->addSelect('SUM(CASE WHEN e.isArchived = false AND e.readingProgress = 0 THEN 1 ELSE 0 END) AS not_started')
+            ->addSelect('COALESCE(AVG(e.readingProgress), 0) AS avg_progress')
+            ->addSelect('COALESCE(SUM(e.readingTime), 0) AS total_reading_time')
+            ->where('e.user = :userId')->setParameter('userId', $userId)
+            ->getQuery()
+            ->getSingleResult();
+
+        return [
+            'total' => (int) $result['total'],
+            'finished' => (int) $result['finished'],
+            'in_progress' => (int) $result['in_progress'],
+            'not_started' => (int) $result['not_started'],
+            'avg_progress' => (float) $result['avg_progress'],
+            'total_reading_time' => (int) $result['total_reading_time'],
+        ];
+    }
+
+    /**
      * Remove all entries for a user id.
      * Used when a user wants to reset all information.
      *

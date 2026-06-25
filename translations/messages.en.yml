@@ -255,6 +255,15 @@ entry:
         toggle_mass_action: Toggle mass action
         mass_action_tags_input_placeholder: tag1, tag2, tag3
         add_tags: Add tags
+        reading_progress: '%progress%% read'
+        reading_stats:
+            title: Reading stats
+            finished: Finished
+            in_progress: In progress
+            not_started: Not started
+            reading_time: Reading time
+            minutes_suffix: min
+            average_progress: Average reading progress
     filters:
         title: Filters
         status_label: Status

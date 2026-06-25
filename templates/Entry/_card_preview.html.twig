@@ -26,6 +26,8 @@
     </div>
     {% endif %}
 
+    {% include "Entry/_reading_progress_bar.html.twig" with {'entry': entry} only %}
+
     <div class="wbg-card__body">
         {% include "Entry/Card/_content.html.twig" with {'entry': entry} only %}
     </div>

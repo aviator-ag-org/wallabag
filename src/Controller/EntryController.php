@@ -11,6 +11,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Spiriit\Bundle\FormFilterBundle\Filter\FilterBuilderUpdaterInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -488,6 +489,41 @@ class EntryController extends AbstractController
         $redirectUrl = $this->redirectHelper->to($request->query->get('redirect'));
 
         return $this->redirect($redirectUrl);
+    }
+
+    /**
+     * Persists the reading progress of an entry.
+     *
+     * Called asynchronously from the reader as the user scrolls; the progress
+     * only ever moves forward and the entry is auto-archived once fully read.
+     *
+     * @return JsonResponse
+     */
+    #[Route(path: '/reading-progress/{id}', name: 'reading_progress', methods: ['POST'], requirements: ['id' => '\d+'])]
+    #[IsGranted('EDIT', subject: 'entry')]
+    public function updateReadingProgressAction(Request $request, Entry $entry)
+    {
+        if (!$this->isCsrfTokenValid('reading-progress', $request->request->get('token'))) {
+            throw new BadRequestHttpException('Bad CSRF token.');
+        }
+
+        $progress = (int) $request->request->get('progress');
+
+        // Progress is monotonic: never let a later, smaller value rewind it.
+        if ($progress > $entry->getReadingProgress()) {
+            $entry->setReadingProgress($progress);
+
+            if (100 === $entry->getReadingProgress() && !$entry->isArchived()) {
+                $entry->updateArchived(true);
+            }
+
+            $this->entityManager->flush();
+        }
+
+        return new JsonResponse([
+            'progress' => $entry->getReadingProgress(),
+            'archived' => $entry->isArchived(),
+        ]);
     }
 
     /**
