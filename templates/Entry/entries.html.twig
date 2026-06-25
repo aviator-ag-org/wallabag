@@ -73,6 +73,9 @@
                 {% endif %}
             </div>
         </div>
+        {% if entries.count > 0 %}
+            {% include "Entry/_reading_stats.html.twig" %}
+        {% endif %}
         {% if current_route == 'search' and is_granted('CREATE_TAGS') %}
             <form action="{{ path('tag_this_search', {'filter': searchTerm, 'currentRoute': app.request.get('currentRoute'), redirect: current_path}) }}" method="post">
                 <input type="hidden" name="token" value="{{ csrf_token('tag-this-search') }}"/>

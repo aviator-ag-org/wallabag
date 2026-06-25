@@ -18,6 +18,7 @@
         <div class="wbg-list-card__domain">
             <a href="{{ entry.url|e }}" target="_blank" title="{{ entry.domainName|removeWww }}">{{ entry.domainName|removeWww }}</a>
         </div>
+        {% include "Entry/_reading_progress_bar.html.twig" with {'entry': entry} only %}
     </div>
 
     <div class="wbg-list-meta">

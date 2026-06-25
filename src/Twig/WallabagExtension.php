@@ -46,6 +46,7 @@ class WallabagExtension extends AbstractExtension implements GlobalsInterface
             new TwigFunction('count_entries', $this->countEntries(...)),
             new TwigFunction('count_tags', $this->countTags(...)),
             new TwigFunction('display_stats', $this->displayStats(...)),
+            new TwigFunction('reading_stats', $this->readingStats(...)),
             new TwigFunction('asset_file_exists', $this->assetFileExists(...)),
             new TwigFunction('theme_class', $this->themeClass(...)),
         ];
@@ -155,6 +156,41 @@ class WallabagExtension extends AbstractExtension implements GlobalsInterface
             '%nb_archives%' => $nbArchives,
             '%per_day%' => round($nbArchives / $nbDays, 2),
         ]);
+    }
+
+    /**
+     * Return reading progress statistics for the current user, ready to render
+     * in the entries reading-stats panel.
+     *
+     * @return array{total: int, finished: int, in_progress: int, not_started: int, avg_progress: int, total_reading_time: int}
+     */
+    public function readingStats()
+    {
+        $empty = [
+            'total' => 0,
+            'finished' => 0,
+            'in_progress' => 0,
+            'not_started' => 0,
+            'avg_progress' => 0,
+            'total_reading_time' => 0,
+        ];
+
+        $user = $this->tokenStorage->getToken() ? $this->tokenStorage->getToken()->getUser() : null;
+
+        if (!$user instanceof User) {
+            return $empty;
+        }
+
+        $stats = $this->entryRepository->getReadingProgressStatsByUser($user->getId());
+
+        return [
+            'total' => $stats['total'],
+            'finished' => $stats['finished'],
+            'in_progress' => $stats['in_progress'],
+            'not_started' => $stats['not_started'],
+            'avg_progress' => (int) round($stats['avg_progress']),
+            'total_reading_time' => $stats['total_reading_time'],
+        ];
     }
 
     public function assetFileExists($name)
