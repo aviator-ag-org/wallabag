@@ -75,6 +75,41 @@ class EntryFilterType extends AbstractType
                 },
                 'label' => 'entry.filters.reading_time.label',
             ])
+            ->add('readingProgress', NumberRangeFilterType::class, [
+                'left_number_options' => [
+                    'condition_operator' => FilterOperands::OPERATOR_GREATER_THAN_EQUAL,
+                    'attr' => ['min' => 0, 'max' => 100],
+                ],
+                'right_number_options' => [
+                    'condition_operator' => FilterOperands::OPERATOR_LOWER_THAN_EQUAL,
+                    'attr' => ['min' => 0, 'max' => 100],
+                ],
+                'apply_filter' => static function (QueryInterface $filterQuery, $field, $values) {
+                    $lower = $values['value']['left_number'][0];
+                    $upper = $values['value']['right_number'][0];
+
+                    if (null === $lower && null === $upper) {
+                        // no value? no filter
+                        return;
+                    }
+
+                    \assert($filterQuery instanceof ORMQuery);
+
+                    if (null === $lower) {
+                        // only upper value is defined: reading progress LOWER THAN this value
+                        $expression = $filterQuery->getExpr()->lte($field, (int) $upper);
+                    } elseif (null === $upper) {
+                        // only lower value is defined: reading progress GREATER THAN this value
+                        $expression = $filterQuery->getExpr()->gte($field, (int) $lower);
+                    } else {
+                        // both values are defined, perform a between
+                        $expression = $filterQuery->getExpr()->between($field, (int) $lower, (int) $upper);
+                    }
+
+                    return $filterQuery->createCondition($expression);
+                },
+                'label' => 'entry.filters.reading_progress.label',
+            ])
             ->add('createdAt', DateRangeFilterType::class, [
                 'left_date_options' => [
                     'attr' => [
@@ -170,6 +205,35 @@ class EntryFilterType extends AbstractType
             ->add('isNotParsed', CheckboxFilterType::class, [
                 'label' => 'entry.filters.parsed_label',
                 'data' => $options['filter_parsed'],
+            ])
+            ->add('isReadingInProgress', CheckboxFilterType::class, [
+                'label' => 'entry.filters.in_progress_label',
+                'apply_filter' => static function (QueryInterface $filterQuery, $field, $values) {
+                    if (false === $values['value']) {
+                        return false;
+                    }
+
+                    \assert($filterQuery instanceof ORMQuery);
+
+                    // reading progress strictly between 0 and 100 (started but not finished)
+                    $expression = $filterQuery->getExpr()->between('e.readingProgress', 1, 99);
+
+                    return $filterQuery->createCondition($expression);
+                },
+            ])
+            ->add('isFinishedReading', CheckboxFilterType::class, [
+                'label' => 'entry.filters.finished_reading_label',
+                'apply_filter' => static function (QueryInterface $filterQuery, $field, $values) {
+                    if (false === $values['value']) {
+                        return false;
+                    }
+
+                    \assert($filterQuery instanceof ORMQuery);
+
+                    $expression = $filterQuery->getExpr()->eq('e.readingProgress', 100);
+
+                    return $filterQuery->createCondition($expression);
+                },
             ])
             ->add('previewPicture', CheckboxFilterType::class, [
                 'apply_filter' => static function (QueryInterface $filterQuery, $field, $values) {

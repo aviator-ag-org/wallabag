@@ -272,6 +272,8 @@ entry:
         unread_label: Unread
         annotated_label: Annotated
         parsed_label: Not correctly fetched
+        in_progress_label: Reading in progress
+        finished_reading_label: Finished reading
         preview_picture_label: Has a preview picture
         preview_picture_help: Preview picture
         is_public_label: Has a public link
@@ -280,6 +282,10 @@ entry:
         http_status_label: HTTP status
         reading_time:
             label: Reading time in minutes
+            from: from
+            to: to
+        reading_progress:
+            label: Reading progress in percent
             from: from
             to: to
         domain_label: Domain name
