@@ -73,6 +73,9 @@
                 {% endif %}
             </div>
         </div>
+        {% if entries.count > 0 %}
+            {% include "Entry/_reading_stats.html.twig" %}
+        {% endif %}
         {% if current_route == 'search' and is_granted('CREATE_TAGS') %}
             <form action="{{ path('tag_this_search', {'filter': searchTerm, 'currentRoute': app.request.get('currentRoute'), redirect: current_path}) }}" method="post">
                 <input type="hidden" name="token" value="{{ csrf_token('tag-this-search') }}"/>
@@ -199,6 +202,20 @@
                     </label>
                 </div>
 
+                <div class="input-field col s6 with-checkbox">
+                    <label for="{{ form.isReadingInProgress.vars.id }}">
+                        {{ form_widget(form.isReadingInProgress) }}
+                        <span>{{ form.isReadingInProgress.vars.label|trans }}</span>
+                    </label>
+                </div>
+
+                <div class="input-field col s6 with-checkbox">
+                    <label for="{{ form.isFinishedReading.vars.id }}">
+                        {{ form_widget(form.isFinishedReading) }}
+                        <span>{{ form.isFinishedReading.vars.label|trans }}</span>
+                    </label>
+                </div>
+
                 <div class="col s12">
                     <label>{{ 'entry.filters.preview_picture_help'|trans }}</label>
                 </div>
@@ -247,6 +264,20 @@
                 <div class="input-field col s6">
                     {{ form_widget(form.readingTime.right_number, {'type': 'number'}) }}
                     <label for="entry_filter_readingTime_right_number">{{ 'entry.filters.reading_time.to'|trans }}</label>
+                </div>
+
+                <div class="col s12">
+                    {{ form_label(form.readingProgress) }}
+                </div>
+
+                <div class="input-field col s6">
+                    {{ form_widget(form.readingProgress.left_number, {'type': 'number'}) }}
+                    <label for="entry_filter_readingProgress_left_number">{{ 'entry.filters.reading_progress.from'|trans }}</label>
+                </div>
+
+                <div class="input-field col s6">
+                    {{ form_widget(form.readingProgress.right_number, {'type': 'number'}) }}
+                    <label for="entry_filter_readingProgress_right_number">{{ 'entry.filters.reading_progress.to'|trans }}</label>
                 </div>
 
                 <div class="input-field col s12">
